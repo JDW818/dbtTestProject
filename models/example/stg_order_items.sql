@@ -1,0 +1,1 @@
+select id as order_items_id from {{ ref('order_items_upload') }}
