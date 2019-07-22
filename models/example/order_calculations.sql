@@ -1,30 +1,29 @@
-with source1 as (
+with orders as (
 
-    select * from {{ ref('customers_upload') }}
+    select * from {{ ref('stg_orders') }}
 
 ),
 
-source2 as (
+orderitems as (
     
-    select * from {{ ref('orders_upload') }}
+    select * from {{ ref('stg_order_items') }}
 ),
 
 calc as (
 
     select 
-        source1.id as customer_id, 
-        lag(source2.created_at, 1) [ignore nulls] 
-        over (partition by source1.id
-        order by source2.created_at desc) as created_at_prev,
+        orders.customer_id, 
+        lag(orders.created_at, 1) [ignore nulls] 
+        over (partition by orders.customer_id
+              order by orders.created_at desc) as created_at_prev,
         created_at
-    from source1
-    
-    inner join source2
-            
-            on source1.id = source2.customer_id
+    from orders
+),
 
-)
-
+final as (
     select 
         datediff(month, created_at, created_at_prev) as months_since_prior_order
     from calc
+)
+
+select * from final
