@@ -1,29 +1,37 @@
 {# 
-create a `fct_order_items` table joining orders to customers to get the 
-`order_date` and `email` and `customer_id` on the order table
+create a fct_order_items table joining orders to order items. 
+select all fields from order items and join in the order_date, 
+email and customer_id from the orders table
 #}
 with source_1 as (
 
-    select * from {{ ref('orders_upload') }}
+    select * from {{ ref('order_items_upload') }}
 
 ),
 
 source_2 as (
 
-    select * from {{ ref('customers_upload') }}
+    select * from {{ ref('orders_upload') }}
 
 )
 
 final as (
 
     select
-        source_1.created_at,
-        source_2.email,
-        source_2.customer_id,
+        source1.id as order_item_id,
+        source1.order_id,
+        source1.price,
+        source1.quantity,
+        source1.size,
+        source1.color,
+        source1.product_id,
+        source2.created_at,
+        source2.email,
+        source2.customer_id
 
     from source_1
     
-    left join source_2 on source_1.customer_id  = source_2.id
+    inner join source_2 on source_1.order_id = source2.id
 
 )
 
