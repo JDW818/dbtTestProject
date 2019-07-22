@@ -13,7 +13,8 @@ renamed as (
         first_name,
         last_name,
         gender,
-        accepts_marketing
+        accepts_marketing,
+        {{ dbt_utils.surrogate_key('id') }} as unique_id
     from source
 
 )
