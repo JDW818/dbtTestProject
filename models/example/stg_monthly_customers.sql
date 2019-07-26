@@ -25,7 +25,7 @@ calc as
       customer_id,
       email,
       created_at,
-      rank () over(partition by customer_id, created_at order by created_at DESC) rnk
+      rank () over(partition by customer_id, month(created_at), year(created_at) order by created_at DESC) rnk
     from customers
     inner join all_months on month(customers.created_at) = month(all_months.date_month)
     and year(customers.created_at) = year(all_months.date_month)
